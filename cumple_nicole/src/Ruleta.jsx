@@ -1,4 +1,4 @@
-// Nicole_Birthday_Page.jsx
+// NicoleBirthdayPage.jsx
 import React, { useState, useEffect } from "react";
 import Confetti from "react-confetti";
 
