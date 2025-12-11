@@ -1,0 +1,107 @@
+body {
+  background: #ffd8ec;
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+.birthday-container {
+  text-align: center;
+  padding: 20px;
+  overflow-x: hidden;
+}
+
+/* Tipografía tierna */
+.birthday-title {
+  font-family: 'Dancing Script', cursive;
+  color: #ff69b4;
+  font-size: 3rem;
+  margin-top: 30px;
+}
+
+.birthday-message {
+  max-width: 600px;
+  margin: 15px auto 30px;
+  font-size: 1.2rem;
+  color: #b84e76;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Carrusel polaroid */
+.carousel-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.polaroid {
+  background: white;
+  padding: 15px;
+  width: 260px;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(255, 105, 180, 0.35);
+}
+
+.carousel-img {
+  width: 100%;
+  border-radius: 8px;
+}
+
+.polaroid-caption {
+  margin-top: 8px;
+  font-family: 'Dancing Script', cursive;
+  font-size: 1.4rem;
+  color: #ff69b4;
+}
+
+/* Botón de voz */
+.voice-button {
+  background: #ff9fcf;
+  border: none;
+  color: white;
+  padding: 12px 25px;
+  margin-top: 25px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  box-shadow: 0 4px 12px rgba(255, 105, 180, 0.5);
+}
+
+/* Botón sorpresa */
+.surprise-button {
+  background: #ff7ab8;
+  border: none;
+  color: white;
+  padding: 12px 25px;
+  margin-top: 15px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  box-shadow: 0 4px 12px rgba(255, 105, 180, 0.5);
+}
+
+/* Corazones */
+.hearts-container {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  font-size: 2rem;
+  animation: fadeHearts 2s forwards;
+}
+
+.heart {
+  position: absolute;
+  animation: floatUp 2s ease-in infinite;
+}
+
+@keyframes floatUp {
+  0% { transform: translateY(50px) scale(0.5); opacity: 1; }
+  100% { transform: translateY(-300px) scale(1.6); opacity: 0; }
+}
+
+@keyframes fadeHearts {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
