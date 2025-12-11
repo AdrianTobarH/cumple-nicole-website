@@ -10,12 +10,16 @@ body {
 body::after {
   content: "";
   position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
+  top: 0; 
+  left: 0;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
-  background-image: url("https://i.ibb.co/0VqYF1C/sparkles.png");
-  opacity: 0.6;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAB4CAYAAABx6D7YAAAACXBIWXMAAC4jAAAuIwF4pT92AAAEs0lEQVR4nO3dy47kRhCF4UfgA3gAttrz7H5F6h3tFfRa3hUNBM8DT6vKrrfE0kP7FpC18JNAAAQIECBAgQIAAAQJMyzzl6N53cedc5zznnHNPPufc5zznnHNPPufc5zznnHNPPufc5zxn2tl2Frq9tHnr6ERJxtrHk+qeqPqu5lRt5z3R8T5j2s7Rb7+y3f+vzpU7X8qnpR0Z7Edbs6GOeVs7Gk7FjbvmiJ37/R4IkmrZtE0jZ7uG3e8H7Uv0zSNE27Nv8Sxv1hZ3pFva3pFl/lfHeHbZG2P0GnH4z2L9nYb3qFle7aJ7n4GZ9q7FuP4ufv0H8sG7aKvYzDf6Yz9sL173vT4I4xpYvF0k3XH6mZvWt9VX9c9jP2GkHxvKj6yYf7GZf7Td+5uJE1a9me7ON3MeTFd7Zsnyk3eiZ7z+WOq3lX7e2lr/8tOKv6xJtyuO9g8rnbK9TDXf3L42LfbNs7SkXz9h5p3zHGW99b24mk36n69KX7V+Q5/j3jG26u8kddk3Rd6+Rr7Y9nw5w1oyhH5m317b3s+2fu1mmH2G7mn/zjbVxzff2ludy3efWlxzm7aXntveb7xe//Sqn9i1zff8N1mt7vVUu9nX59xj2a/bR3lja/7b9wnOHr2mn3f+6mOWu237R72M97w7MPlZ33NWH3KzN+Vsc8/2tqS+SY7yST89yd0Vtudc55xzTz7n3Oc855xzTz7n3Oc855xzTz7n3Oc855xzTz7n3Ocy/Yf0GAziFN/Z+nXgAAAABJRU5ErkJggg==");
+  background-size: cover;
+  opacity: 0.55;
   animation: glitterMove 18s linear infinite;
+  z-index: -1;
 }
 
 @keyframes glitterMove {
@@ -49,10 +53,10 @@ body::after {
 }
 
 .carta-texto {
-  font-size: 1.05rem;
+  font-size: 1.08rem;
   color: #444;
-  line-height: 1.65;
-  text-align: justified;
+  line-height: 1.7;
+  text-align: justify;
 }
 
 /* Botón sorpresa */
@@ -78,7 +82,7 @@ body::after {
 .heart {
   position: absolute;
   font-size: 2.2rem;
-  bottom: -40px;  /* 🔥 Aparecen más abajo */
+  bottom: -40px;
   transform: translateY(0) scale(0.9);
   animation: heartFloat 4.5s linear forwards;
   filter: drop-shadow(0 6px 8px rgba(255,100,170,0.22));
@@ -89,7 +93,7 @@ body::after {
   100% { transform: translateY(-420px) scale(1.3); opacity: 0; }
 }
 
-/* Polaroid */
+/* Carrusel Polaroid */
 .carousel-container {
   display: flex;
   justify-content: center;

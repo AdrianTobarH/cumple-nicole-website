@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Confetti from "react-confetti";
 
-// Importación de imágenes (carrusel)
+import "./NicoleBirthday.css";
+
+// Carrusel de imágenes
 import foto1 from "./IMG-20220513-WA0052.jpg";
 import foto2 from "./IMG-20250706-WA0013.jpg";
 import foto3 from "./IMG-20250808-WA0036.jpg";
@@ -19,10 +21,10 @@ function NicoleBirthdayPage() {
 
   const images = [foto1, foto2, foto3, foto4, foto5];
 
-  // Música automática
+  // Música automática con permiso del usuario
   useEffect(() => {
     audio.volume = 0.75;
-    audio.playbackRate = 1.5; // 🔥 velocidad x1.5
+    audio.playbackRate = 1.5;
     audio.loop = true;
 
     const playAudio = () => {
@@ -39,7 +41,7 @@ function NicoleBirthdayPage() {
       setCurrentIndex((prev) => (prev + 1) % images.length);
     }, 3500);
     return () => clearInterval(interval);
-  }, [images.length]);
+  }, []);
 
   // Corazones sorpresa
   const triggerHearts = () => {
@@ -51,7 +53,7 @@ function NicoleBirthdayPage() {
     <div className="birthday-container">
       {showConfetti && <Confetti />}
 
-      {/* Título con latido */}
+      {/* Título */}
       <h1 className="titulo-latido">💗 Feliz Cumpleaños, Nicole 💗</h1>
 
       {/* Carrusel Polaroid */}
@@ -62,42 +64,37 @@ function NicoleBirthdayPage() {
         </div>
       </div>
 
-      {/* Carta romántica */}
+      {/* Carta */}
       <div className="carta-container">
         <p className="carta-texto">
-          Nicole… hoy celebramos la vida de una mujer extraordinaria.
-          Una mujer que no solo ilumina su propio camino, sino también el de quienes tenemos 
-          la fortuna de cruzarnos con ella. Hoy el mundo se vuelve un poco más suave, un poco más bello, 
-          porque en un día como este llegaste tú.
+          Nicole… hoy celebramos la vida de una mujer extraordinaria.  
+          Una mujer que ilumina su propio camino y también el de quienes tenemos la fortuna de encontrarnos con ella.
+          Hoy el mundo se vuelve un poco más suave, un poco más hermoso, porque en un día como este llegaste tú.
           <br /><br />
 
-          Quiero que este cumpleaños sea más que una fecha… quiero que sea un recordatorio.
-          Un recordatorio de lo valiosa que eres, de la fuerza tierna que llevas dentro, 
-          de la forma en la que miras la vida con esa mezcla tan tuya de dulzura, sensibilidad y coraje.
+          Quiero que este cumpleaños sea más que una fecha… sea un recordatorio.
+          Un recordatorio de lo valiosa que eres, de tu fuerza suave, de esa mezcla tan tuya de ternura y valentía.
           <br /><br />
 
-          Que este nuevo año te encuentre rodeada de amor del bueno,  
-          de esa paz que llega en los momentos silenciosos y de esa alegría suave que se queda incluso 
-          cuando nadie la ve. Que tengas libros que te hagan sentir, canciones que te abracen,  
-          metas que te enciendan el alma y personas que te quieran de verdad.
+          Que este nuevo año te encuentre rodeada de amor sincero, de paz,  
+          de libros que te hagan sentir, metas que te enciendan el alma  
+          y de personas que te quieran bonito y de verdad.
           <br /><br />
 
           Yo… yo solo quiero acompañarte.  
-          Cuidarte con la misma calma con la que se cuidan las cosas importantes.  
-          Ser ese abrazo seguro en tus días dulces y en los difíciles.  
-          Ser motivo de tus sonrisas y refugio para tus cansancios.
+          Cuidarte con la calma con la que se cuidan las cosas importantes.  
+          Ser motivo de tus sonrisas y abrazo para tus cansancios.
           <br /><br />
 
-          Ojalá la vida te dé todo lo que sueñas —  
-          y ojalá me dé la oportunidad de seguir celebrando tus cumpleaños junto a ti.
+          Ojalá la vida te regale todo lo que sueñas —  
+          y ojalá me permita seguir celebrando contigo cada uno de tus cumpleaños.
           <br /><br />
 
           Feliz cumpleaños, mi amor.  
-          Que este 26 sea un capítulo lleno de magia, de luz y de momentos que se queden para siempre.
+          Que este 26 sea un capítulo lleno de magia, luz y momentos que se queden para siempre.
           <br /><br />
 
-          Con todo mi cariño,
-          <br />
+          Con todo mi cariño,  
           <strong>Adrian Tobar</strong>
         </p>
       </div>
@@ -107,7 +104,7 @@ function NicoleBirthdayPage() {
         ✨ Toque sorpresa ✨
       </button>
 
-      {/* Corazones flotantes */}
+      {/* Corazones flotando */}
       {showHearts &&
         [...Array(18)].map((_, i) => (
           <span
