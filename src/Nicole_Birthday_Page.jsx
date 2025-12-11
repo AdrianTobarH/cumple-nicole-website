@@ -23,8 +23,8 @@ function NicoleBirthdayPage() {
 
   // Música automática con permiso del usuario
   useEffect(() => {
-    audio.volume = 0.75;
-    audio.playbackRate = 1.5;
+    audio.volume = 0.50;
+    audio.playbackRate = 1.0;
     audio.loop = true;
 
     const playAudio = () => {
