@@ -1,8 +1,24 @@
+import React, { useState, useEffect, useRef } from "react";
+import Confetti from "react-confetti";
+import { motion } from "framer-motion";
+
+// Importación de imágenes del carrusel
+import photo1 from "./IMG-20220513-WA0052.jpg";
+import photo2 from "./IMG-20250706-WA0013.jpg";
+import photo3 from "./IMG-20250808-WA0036.jpg";
+import photo4 from "./IMG-20251009-WA0061.jpg";
+import photo5 from "./IMG-20251019-WA0024.jpg";
+
+// Importación correcta del audio
+import audioMensaje from "./mensaje-cumple-nicole.mp3.mp3";
+
+import "./NicoleBirthday.css";
+
 function NicoleBirthdayPage() {
   const [width, setWidth] = useState(window.innerWidth);
   const [height, setHeight] = useState(window.innerHeight);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [showHearts, setShowHearts] = useState(false);
+  const [index, setIndex] = useState(0);
+  const [hearts, setHearts] = useState(false);
 
   const audioRef = useRef(null);
 
@@ -10,36 +26,36 @@ function NicoleBirthdayPage() {
 
   // Resize confetti
   useEffect(() => {
-    const handleResize = () => {
+    const handle = () => {
       setWidth(window.innerWidth);
       setHeight(window.innerHeight);
     };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    window.addEventListener("resize", handle);
+    return () => window.removeEventListener("resize", handle);
   }, []);
 
-  // Carousel autoplay
+  // Carrusel automático
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % photos.length);
+      setIndex((prev) => (prev + 1) % photos.length);
     }, 3000);
     return () => clearInterval(interval);
   }, []);
 
-  // 💗 Nueva voz mejorada x1.5 + mensaje más largo y romántico
-  const playVoiceMessage = () => {
+  // 🔊 Nueva voz elegante romántica + audio
+  const playVoice = () => {
     if (!window.speechSynthesis) {
       alert("Tu navegador no soporta mensajes de voz.");
       return;
     }
 
-    const message =
-      "Feliz cumpleaños, mi amor. Nicole... Hoy es un día especial porque el mundo celebra la vida de una persona increíble: tú. Tu luz, tu forma de ser, la dulzura con la que miras las cosas y la fuerza con la que enfrentas cada día te hacen única. Quiero que este nuevo año te encuentre rodeada de cariño, de sonrisas sinceras y de todo aquello que te hace feliz. Que cada sueño que guardas dentro empiece a tomar forma. Que cada deseo encuentre su camino. Y que la vida te sorprenda bonito, como tú mereces. Gracias por ser tú. Tan auténtica, tan sensible, tan tú. Ojalá la alegría que das a los demás vuelva multiplicada a tu corazón. Que nunca te falte amor, paz, libros que te hagan sentir, y momentos que te recuerden lo valiosa que eres. Feliz cumpleaños, Nicole. Que este veintiséis sea un capítulo lleno de magia. Con mucho amor y cariño… Adrian Tobar.";
+    const texto =
+      "Feliz cumpleaños, mi amor. Nicole... Hoy es un día especial porque celebramos la vida de una mujer maravillosa: tú. Tu luz, tu forma de ser, la dulzura con la que miras las cosas y la fuerza con la que enfrentas cada día te hacen única. Deseo que este nuevo año te encuentre rodeada de amor, de sonrisas sinceras y de aquello que realmente te haga feliz. Que cada sueño que guardas en tu corazón empiece a tomar forma. Que la vida te sorprenda bonito, siempre. Gracias por ser tan auténtica, tan sensible, tan tú. Ojalá la alegría que das vuelva multiplicada a tu vida. Que nunca te falte paz, amor, momentos mágicos… y libros que te hagan sentir. Feliz cumpleaños, Nicole. Que este veintiséis sea un capítulo lleno de magia. Con todo el amor del mundo… Adrian Tobar.";
 
-    const utter = new SpeechSynthesisUtterance(message);
+    const utter = new SpeechSynthesisUtterance(texto);
     utter.lang = "es-MX";
     utter.pitch = 1;
-    utter.rate = 1.5; // 🔥 velocidad más energética
+    utter.rate = 1.5; // voz más energica elegante
     utter.volume = 1;
 
     window.speechSynthesis.speak(utter);
@@ -47,88 +63,81 @@ function NicoleBirthdayPage() {
     if (audioRef.current) audioRef.current.play();
   };
 
-  // 💗 Nuevo Toque Sorpresa mejorado (corazones + brillo + animación real)
-  const triggerHearts = () => {
-    setShowHearts(true);
-
-    setTimeout(() => {
-      setShowHearts(false);
-    }, 2500);
+  // Efecto sorpresa – corazones flotantes
+  const tocarSorpresa = () => {
+    setHearts(true);
+    setTimeout(() => setHearts(false), 2500);
   };
 
   return (
     <div className="birthday-container">
-      <Confetti width={width} height={height} numberOfPieces={200} />
+      <Confetti width={width} height={height} numberOfPieces={220} />
 
-      {/* Música */}
-      <audio
-        ref={audioRef}
-        src="https://cdn.pixabay.com/audio/2023/03/31/audio_89b8e7e1ac.mp3"
-      />
+      {/* Audio */}
+      <audio ref={audioRef} src={audioMensaje} preload="auto" />
 
-      {/* 💗 Nuevo título “mi amor” */}
+      {/* Título ultra romántico */}
       <motion.h1
-        className="birthday-title"
+        className="titulo-romantico"
         initial={{ opacity: 0, scale: 0.3 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 1.2 }}
+        transition={{ duration: 1.5 }}
       >
-        💗 ¡Feliz cumpleaños, mi amor! 💗
+        ✨💗 ¡Feliz cumpleaños, mi amor! 💗✨
       </motion.h1>
 
-      {/* Mensaje principal animado */}
+      {/* Mensaje suave */}
       <motion.p
-        className="birthday-message"
-        initial={{ opacity: 0, y: 30 }}
+        className="mensaje-romantico"
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1.4 }}
+        transition={{ duration: 1.8 }}
       >
-        Hoy el mundo celebra a una mujer extraordinaria.  
-        Que tu vida se llene siempre de amor, magia y momentos hermosos.
+        Hoy celebramos la vida de una mujer extraordinaria… tú.  
+        Que este día y todos los que vienen estén llenos de amor, luz y magia.
       </motion.p>
 
       {/* Carrusel */}
       <div className="carousel-container">
         <motion.div
-          key={currentIndex}
+          key={index}
           className="polaroid"
-          initial={{ opacity: 0, rotate: -6 }}
+          initial={{ opacity: 0, rotate: -8 }}
           animate={{ opacity: 1, rotate: 0 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.6 }}
         >
-          <img src={photos[currentIndex]} className="carousel-img" />
+          <img src={photos[index]} className="carousel-img" />
           <p className="polaroid-caption">Nicole 💗</p>
         </motion.div>
       </div>
 
-      {/* Botón mensaje de voz */}
+      {/* Botón voz */}
       <motion.button
-        className="voice-button"
-        whileTap={{ scale: 0.92 }}
-        onClick={playVoiceMessage}
+        className="btn-voz"
+        whileTap={{ scale: 0.9 }}
+        onClick={playVoice}
       >
         🎙️ Escuchar mensaje
       </motion.button>
 
-      {/* Botón sorpresa mejorado */}
+      {/* Botón sorpresa */}
       <motion.button
-        className="surprise-button"
+        className="btn-sorpresa"
         whileHover={{ scale: 1.12 }}
-        onClick={triggerHearts}
+        onClick={tocarSorpresa}
       >
-        ✨ Toque sorpresa ✨
+        💞 Toque sorpresa 💞
       </motion.button>
 
-      {/* Corazones mágicos */}
-      {showHearts && (
-        <div className="hearts-container">
-          {Array.from({ length: 22 }).map((_, i) => (
+      {hearts && (
+        <div className="hearts-overlay">
+          {Array.from({ length: 25 }).map((_, i) => (
             <span
-              key={i}
               className="heart"
+              key={i}
               style={{
                 left: `${Math.random() * 100}%`,
-                animationDuration: `${1 + Math.random() * 1.4}s`
+                animationDuration: `${1 + Math.random() * 1.5}s`
               }}
             >
               💗
@@ -139,3 +148,5 @@ function NicoleBirthdayPage() {
     </div>
   );
 }
+
+export default NicoleBirthdayPage;
