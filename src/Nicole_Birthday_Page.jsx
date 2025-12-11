@@ -1,150 +1,126 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import Confetti from "react-confetti";
-import { motion } from "framer-motion";
 
-// Importación de imágenes del carrusel
-import photo1 from "./IMG-20220513-WA0052.jpg";
-import photo2 from "./IMG-20250706-WA0013.jpg";
-import photo3 from "./IMG-20250808-WA0036.jpg";
-import photo4 from "./IMG-20251009-WA0061.jpg";
-import photo5 from "./IMG-20251019-WA0024.jpg";
+// Importación de imágenes (carrusel)
+import foto1 from "./IMG-20220513-WA0052.jpg";
+import foto2 from "./IMG-20250706-WA0013.jpg";
+import foto3 from "./IMG-20250808-WA0036.jpg";
+import foto4 from "./IMG-20251009-WA0061.jpg";
+import foto5 from "./IMG-20251019-WA0024.jpg";
 
-// Importación correcta del audio
-import audioMensaje from "./mensaje-cumple-nicole.mp3.mp3";
-
-import "./NicoleBirthday.css";
+// Audio
+import audioFile from "./mensaje-cumple-nicole.mp3";
 
 function NicoleBirthdayPage() {
-  const [width, setWidth] = useState(window.innerWidth);
-  const [height, setHeight] = useState(window.innerHeight);
-  const [index, setIndex] = useState(0);
-  const [hearts, setHearts] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(true);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [showHearts, setShowHearts] = useState(false);
+  const [audio] = useState(new Audio(audioFile));
 
-  const audioRef = useRef(null);
+  const images = [foto1, foto2, foto3, foto4, foto5];
 
-  const photos = [photo1, photo2, photo3, photo4, photo5];
-
-  // Resize confetti
+  // Música automática
   useEffect(() => {
-    const handle = () => {
-      setWidth(window.innerWidth);
-      setHeight(window.innerHeight);
+    audio.volume = 0.75;
+    audio.playbackRate = 1.5; // 🔥 velocidad x1.5
+    audio.loop = true;
+
+    const playAudio = () => {
+      audio.play().catch(() => {});
+      document.removeEventListener("click", playAudio);
     };
-    window.addEventListener("resize", handle);
-    return () => window.removeEventListener("resize", handle);
-  }, []);
+
+    document.addEventListener("click", playAudio);
+  }, [audio]);
 
   // Carrusel automático
   useEffect(() => {
     const interval = setInterval(() => {
-      setIndex((prev) => (prev + 1) % photos.length);
-    }, 3000);
+      setCurrentIndex((prev) => (prev + 1) % images.length);
+    }, 3500);
     return () => clearInterval(interval);
-  }, []);
+  }, [images.length]);
 
-  // 🔊 Nueva voz elegante romántica + audio
-  const playVoice = () => {
-    if (!window.speechSynthesis) {
-      alert("Tu navegador no soporta mensajes de voz.");
-      return;
-    }
-
-    const texto =
-      "Feliz cumpleaños, mi amor. Nicole... Hoy es un día especial porque celebramos la vida de una mujer maravillosa: tú. Tu luz, tu forma de ser, la dulzura con la que miras las cosas y la fuerza con la que enfrentas cada día te hacen única. Deseo que este nuevo año te encuentre rodeada de amor, de sonrisas sinceras y de aquello que realmente te haga feliz. Que cada sueño que guardas en tu corazón empiece a tomar forma. Que la vida te sorprenda bonito, siempre. Gracias por ser tan auténtica, tan sensible, tan tú. Ojalá la alegría que das vuelva multiplicada a tu vida. Que nunca te falte paz, amor, momentos mágicos… y libros que te hagan sentir. Feliz cumpleaños, Nicole. Que este veintiséis sea un capítulo lleno de magia. Con todo el amor del mundo… Adrian Tobar.";
-
-    const utter = new SpeechSynthesisUtterance(texto);
-    utter.lang = "es-MX";
-    utter.pitch = 1;
-    utter.rate = 1.5; // voz más energica elegante
-    utter.volume = 1;
-
-    window.speechSynthesis.speak(utter);
-
-    if (audioRef.current) audioRef.current.play();
-  };
-
-  // Efecto sorpresa – corazones flotantes
-  const tocarSorpresa = () => {
-    setHearts(true);
-    setTimeout(() => setHearts(false), 2500);
+  // Corazones sorpresa
+  const triggerHearts = () => {
+    setShowHearts(true);
+    setTimeout(() => setShowHearts(false), 5500);
   };
 
   return (
     <div className="birthday-container">
-      <Confetti width={width} height={height} numberOfPieces={220} />
+      {showConfetti && <Confetti />}
 
-      {/* Audio */}
-      <audio ref={audioRef} src={audioMensaje} preload="auto" />
+      {/* Título con latido */}
+      <h1 className="titulo-latido">💗 Feliz Cumpleaños, Nicole 💗</h1>
 
-      {/* Título ultra romántico */}
-      <motion.h1
-        className="titulo-romantico"
-        initial={{ opacity: 0, scale: 0.3 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 1.5 }}
-      >
-        ✨💗 ¡Feliz cumpleaños, mi amor! 💗✨
-      </motion.h1>
-
-      {/* Mensaje suave */}
-      <motion.p
-        className="mensaje-romantico"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1.8 }}
-      >
-        Hoy celebramos la vida de una mujer extraordinaria… tú.  
-        Que este día y todos los que vienen estén llenos de amor, luz y magia.
-      </motion.p>
-
-      {/* Carrusel */}
+      {/* Carrusel Polaroid */}
       <div className="carousel-container">
-        <motion.div
-          key={index}
-          className="polaroid"
-          initial={{ opacity: 0, rotate: -8 }}
-          animate={{ opacity: 1, rotate: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <img src={photos[index]} className="carousel-img" />
-          <p className="polaroid-caption">Nicole 💗</p>
-        </motion.div>
+        <div className="polaroid-frame">
+          <img src={images[currentIndex]} alt="Foto" className="carousel-img" />
+          <span className="polaroid-note">Nicole ✧</span>
+        </div>
       </div>
 
-      {/* Botón voz */}
-      <motion.button
-        className="btn-voz"
-        whileTap={{ scale: 0.9 }}
-        onClick={playVoice}
-      >
-        🎙️ Escuchar mensaje
-      </motion.button>
+      {/* Carta romántica */}
+      <div className="carta-container">
+        <p className="carta-texto">
+          Nicole… hoy celebramos la vida de una mujer extraordinaria.
+          Una mujer que no solo ilumina su propio camino, sino también el de quienes tenemos 
+          la fortuna de cruzarnos con ella. Hoy el mundo se vuelve un poco más suave, un poco más bello, 
+          porque en un día como este llegaste tú.
+          <br /><br />
+
+          Quiero que este cumpleaños sea más que una fecha… quiero que sea un recordatorio.
+          Un recordatorio de lo valiosa que eres, de la fuerza tierna que llevas dentro, 
+          de la forma en la que miras la vida con esa mezcla tan tuya de dulzura, sensibilidad y coraje.
+          <br /><br />
+
+          Que este nuevo año te encuentre rodeada de amor del bueno,  
+          de esa paz que llega en los momentos silenciosos y de esa alegría suave que se queda incluso 
+          cuando nadie la ve. Que tengas libros que te hagan sentir, canciones que te abracen,  
+          metas que te enciendan el alma y personas que te quieran de verdad.
+          <br /><br />
+
+          Yo… yo solo quiero acompañarte.  
+          Cuidarte con la misma calma con la que se cuidan las cosas importantes.  
+          Ser ese abrazo seguro en tus días dulces y en los difíciles.  
+          Ser motivo de tus sonrisas y refugio para tus cansancios.
+          <br /><br />
+
+          Ojalá la vida te dé todo lo que sueñas —  
+          y ojalá me dé la oportunidad de seguir celebrando tus cumpleaños junto a ti.
+          <br /><br />
+
+          Feliz cumpleaños, mi amor.  
+          Que este 26 sea un capítulo lleno de magia, de luz y de momentos que se queden para siempre.
+          <br /><br />
+
+          Con todo mi cariño,
+          <br />
+          <strong>Adrian Tobar</strong>
+        </p>
+      </div>
 
       {/* Botón sorpresa */}
-      <motion.button
-        className="btn-sorpresa"
-        whileHover={{ scale: 1.12 }}
-        onClick={tocarSorpresa}
-      >
-        💞 Toque sorpresa 💞
-      </motion.button>
+      <button className="boton-sorpresa" onClick={triggerHearts}>
+        ✨ Toque sorpresa ✨
+      </button>
 
-      {hearts && (
-        <div className="hearts-overlay">
-          {Array.from({ length: 25 }).map((_, i) => (
-            <span
-              className="heart"
-              key={i}
-              style={{
-                left: `${Math.random() * 100}%`,
-                animationDuration: `${1 + Math.random() * 1.5}s`
-              }}
-            >
-              💗
-            </span>
-          ))}
-        </div>
-      )}
+      {/* Corazones flotantes */}
+      {showHearts &&
+        [...Array(18)].map((_, i) => (
+          <span
+            key={i}
+            className="heart"
+            style={{
+              left: Math.random() * 90 + "%",
+              animationDuration: 3.5 + Math.random() * 3 + "s",
+            }}
+          >
+            💖
+          </span>
+        ))}
     </div>
   );
 }

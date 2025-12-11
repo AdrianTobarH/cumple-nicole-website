@@ -1,3 +1,4 @@
+import React from "react";
 import NicoleBirthdayPage from "./Nicole_Birthday_Page.jsx";
 
 function App() {
