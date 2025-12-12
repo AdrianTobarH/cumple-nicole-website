@@ -1,4 +1,4 @@
-// Ruleta.jsx
+// src/Ruleta.jsx
 import React, { useRef, useState } from "react";
 import "./Games.css";
 
@@ -11,109 +11,114 @@ const PRIZES = [
   "Un deseo que tú pidas ✨",
 ];
 
-export default function Ruleta({ onBack, onCompleted }) {
+export default function Ruleta({ onBack }) {
   const wheelRef = useRef(null);
   const [spinning, setSpinning] = useState(false);
   const [result, setResult] = useState(null);
-  const [lastRotation, setLastRotation] = useState(0);
-  const [reported, setReported] = useState(false);
+
+  const sliceAngle = 360 / PRIZES.length;
 
   const spin = () => {
     if (spinning) return;
-
-    const slice = 360 / PRIZES.length;
-    const targetIndex = Math.floor(Math.random() * PRIZES.length);
-
-    const extraTurns = 3 + Math.floor(Math.random() * 3); // 3–5 vueltas
-    const targetAngle = targetIndex * slice + slice / 2;
-    const finalRotation = lastRotation + extraTurns * 360 + targetAngle;
-
     setSpinning(true);
     setResult(null);
 
+    const spinTurns = 3 + Math.random() * 3;
+    const prizeIndex = Math.floor(Math.random() * PRIZES.length);
+    const targetAngle = 360 - prizeIndex * sliceAngle - sliceAngle / 2;
+    const degrees = spinTurns * 360 + targetAngle;
+
     if (wheelRef.current) {
+      wheelRef.current.classList.remove("wheel--reset");
       wheelRef.current.style.transition =
-        "transform 4s cubic-bezier(.18,.9,.2,1)";
-      wheelRef.current.style.transform = `rotate(${finalRotation}deg)`;
+        "transform 4.4s cubic-bezier(.18,.9,.15,1)";
+      wheelRef.current.style.transform = `rotate(${degrees}deg)`;
     }
 
     setTimeout(() => {
-      setLastRotation(finalRotation % 360);
-      setResult(PRIZES[targetIndex]);
+      setResult(PRIZES[prizeIndex]);
       setSpinning(false);
-
-      if (!reported && onCompleted) {
-        onCompleted();
-        setReported(true);
-      }
-    }, 4100);
+    }, 4500);
   };
 
   const resetWheel = () => {
-    if (spinning) return;
     if (wheelRef.current) {
+      wheelRef.current.classList.add("wheel--reset");
       wheelRef.current.style.transition = "none";
       wheelRef.current.style.transform = "rotate(0deg)";
     }
-    setLastRotation(0);
     setResult(null);
   };
 
   return (
-    <div className="game-screen">
-      <div className="game-topbar">
-        <button className="back-btn" onClick={onBack}>
-          ← Volver
+    <div className="game-modal">
+      <div className="game-card">
+        <button
+          className="close-circle-btn"
+          onClick={onBack}
+          aria-label="Cerrar"
+        >
+          ✕
         </button>
-        <div className="counter">Ruleta del Amor</div>
-      </div>
 
-      <div className="ruleta-stage">
-        <div className="wheel-wrap">
-          <div className="wheel" ref={wheelRef}>
-            {PRIZES.map((p, i) => (
-              <div
-                key={i}
-                className="slice"
-                style={{ transform: `rotate(${i * (360 / PRIZES.length)}deg)` }}
-              >
-                <span className="slice-label">{p}</span>
-              </div>
-            ))}
-          </div>
-
-          <div className="pointer">▼</div>
+        <div className="game-header">
+          <span className="game-tag">Juego</span>
+          <h2 className="game-title">Ruleta del Amor</h2>
+          <p className="game-sub">
+            Gira la ruleta y deja que el destino elija un premio romántico 💖
+          </p>
         </div>
 
-        <div className="ruleta-actions">
-          <button className="btn-primary" onClick={spin} disabled={spinning}>
-            {spinning ? "Girando..." : "Girar la ruleta"}
-          </button>
-          <button
-            className="btn-secondary"
-            onClick={resetWheel}
-            disabled={spinning}
-          >
-            Reset
-          </button>
-        </div>
-
-        {result && (
-          <div className="modal secret-modal">
-            <div className="modal-card">
-              <h3>Felicidades 🎉</h3>
-              <p className="secret-text">{result}</p>
-              <div className="modal-actions">
-                <button
-                  className="btn-primary"
-                  onClick={() => setResult(null)}
-                >
-                  Aceptar
-                </button>
-              </div>
+        <div className="ruleta-stage">
+          <div className="wheel-wrap">
+            <div className="pointer" aria-hidden="true" />
+            <div className="wheel" ref={wheelRef}>
+              {PRIZES.map((text, i) => {
+                const rotation = i * sliceAngle;
+                return (
+                  <div
+                    key={i}
+                    className="slice"
+                    style={{ transform: `rotate(${rotation}deg)` }}
+                  >
+                    <span
+                      className="slice-label"
+                      style={{
+                        transform: `translate(-50%, -145%) rotate(${-rotation}deg)`,
+                      }}
+                    >
+                      {text}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
           </div>
-        )}
+
+          <div className="ruleta-actions">
+            <button
+              className="btn-primary"
+              onClick={spin}
+              disabled={spinning}
+            >
+              {spinning ? "Girando..." : "Girar la ruleta"}
+            </button>
+            <button
+              className="btn-secondary"
+              onClick={resetWheel}
+              disabled={spinning}
+            >
+              Reset
+            </button>
+          </div>
+
+          {result && (
+            <div className="ruleta-result">
+              <p className="ruleta-result-label">Premio conseguido:</p>
+              <p className="ruleta-result-text">{result}</p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

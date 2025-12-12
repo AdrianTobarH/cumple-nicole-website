@@ -1,6 +1,8 @@
-// FindHearts.jsx
+// src/FindHearts.jsx
 import React, { useEffect, useState } from "react";
 import "./Games.css";
+
+const TOTAL = 7;
 
 const MESSAGES = [
   "Tu sonrisa ilumina incluso mis días más difíciles.",
@@ -12,20 +14,18 @@ const MESSAGES = [
   "Mi corazón te eligió sin dudar.",
 ];
 
-export default function FindHearts({ onBack, onCompleted }) {
-  const TOTAL = 7;
+export default function FindHearts({ onBack }) {
   const [hearts, setHearts] = useState([]);
   const [found, setFound] = useState(Array(TOTAL).fill(false));
   const [foundCount, setFoundCount] = useState(0);
   const [lastMsg, setLastMsg] = useState("");
   const [showSecret, setShowSecret] = useState(false);
-  const [reported, setReported] = useState(false);
+  const [sparkles, setSparkles] = useState([]);
 
   useEffect(() => {
-    // posiciones aleatorias
     const arr = Array.from({ length: TOTAL }).map(() => ({
-      left: 6 + Math.random() * 88,
-      top: 18 + Math.random() * 70,
+      left: 10 + Math.random() * 80,
+      top: 18 + Math.random() * 60,
     }));
     setHearts(arr);
   }, []);
@@ -33,96 +33,120 @@ export default function FindHearts({ onBack, onCompleted }) {
   const handleClickHeart = (idx) => {
     if (found[idx]) return;
 
-    const newFound = found.slice();
-    newFound[idx] = true;
-    setFound(newFound);
+    const updated = [...found];
+    updated[idx] = true;
+    setFound(updated);
 
     const newCount = foundCount + 1;
     setFoundCount(newCount);
     setLastMsg(MESSAGES[idx] || "Eres maravillosa.");
 
+    const pos = hearts[idx];
+    const id = `${idx}-${Date.now()}`;
+    setSparkles((prev) => [...prev, { id, left: pos.left, top: pos.top }]);
+    setTimeout(
+      () => setSparkles((prev) => prev.filter((s) => s.id !== id)),
+      850
+    );
+
     if (newCount >= TOTAL) {
-      setTimeout(() => {
-        setShowSecret(true);
-        if (!reported && onCompleted) {
-          onCompleted();
-          setReported(true);
-        }
-      }, 800);
+      setTimeout(() => setShowSecret(true), 650);
     }
   };
 
+  const progress = (foundCount / TOTAL) * 100;
+
   return (
-    <div className="game-screen">
-      <div className="game-topbar">
-        <button className="back-btn" onClick={onBack}>
-          ← Volver
+    <div className="game-modal">
+      <div className="game-card">
+        <button
+          className="close-circle-btn"
+          onClick={onBack}
+          aria-label="Cerrar"
+        >
+          ✕
         </button>
-        <div className="counter">
-          Corazones encontrados: {foundCount}/{TOTAL} ❤️
-        </div>
-      </div>
 
-      <div className="find-stage">
-        <p className="hint">Busca y toca los corazones escondidos ❤</p>
-
-        <div className="field-area">
-          {hearts.map((pos, i) => (
-            <button
-              key={i}
-              className={`heart-egg ${found[i] ? "found" : ""}`}
-              style={{ left: `${pos.left}%`, top: `${pos.top}%` }}
-              onClick={() => handleClickHeart(i)}
-              aria-hidden={found[i]}
-            >
-              {found[i] ? "💗" : "♡"}
-            </button>
-          ))}
+        <div className="game-header">
+          <span className="game-tag">Juego</span>
+          <h2 className="game-title">Encuentra los Corazones</h2>
+          <p className="game-sub">
+            Hay <strong>{TOTAL}</strong> corazones escondidos. Cada uno guarda
+            un mensaje solo para ti 💗
+          </p>
         </div>
 
-        <div className="found-msg">
-          {lastMsg && <div className="msg-bubble">{lastMsg}</div>}
-        </div>
-      </div>
+        <div className="find-stage">
+          <div className="progress-bar">
+            <div
+              className="progress-bar-fill"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+          <p className="hint">
+            Haz clic por la pantalla para descubrirlos. Algunos se esconden muy
+            bien ✨
+          </p>
 
-      {showSecret && (
-        <div className="modal secret-modal">
-          <div className="modal-card">
-            <h3>💌 Carta secreta</h3>
-            <div className="secret-text">
-              Nicole… hoy celebramos la vida de una mujer extraordinaria. Una
-              mujer que no solo ilumina su propio camino, sino también el de
-              quienes tenemos la fortuna de cruzarnos con ella. Hoy el mundo se
-              vuelve un poco más suave, un poco más bello, porque en un día como
-              este llegaste tú.
-              <br />
-              <br />
-              Quiero que este cumpleaños sea más que una fecha… quiero que sea
-              un recordatorio. Un recordatorio de lo valiosa que eres, de la
-              fuerza tierna que llevas dentro, de la forma en la que miras la
-              vida con esa mezcla tan tuya de dulzura, sensibilidad y coraje.
-              <br />
-              <br />
-              Que este nuevo año te encuentre rodeada de amor del bueno, de esa
-              paz que llega en los momentos silenciosos y de esa alegría suave
-              que se queda incluso cuando nadie la ve. Que tengas libros que te
-              hagan sentir, canciones que te abracen, metas que te enciendan el
-              alma y personas que te quieran de verdad.
-              <br />
-              <br />
-              Con todo mi cariño, <strong>Adrian Tobar</strong>
-            </div>
-            <div className="modal-actions">
+          <div className="field-area">
+            {hearts.map((pos, i) => (
               <button
-                onClick={() => setShowSecret(false)}
-                className="btn-primary"
+                key={i}
+                className={`heart-egg ${found[i] ? "found" : ""}`}
+                style={{ left: `${pos.left}%`, top: `${pos.top}%` }}
+                onClick={() => handleClickHeart(i)}
               >
-                Cerrar
+                {found[i] ? "💖" : "🤍"}
               </button>
-            </div>
+            ))}
+
+            {sparkles.map((s) => (
+              <span
+                key={s.id}
+                className="heart-spark"
+                style={{ left: `${s.left}%`, top: `${s.top}%` }}
+              />
+            ))}
+          </div>
+
+          <div className="found-msg">
+            {lastMsg && <div className="msg-bubble">{lastMsg}</div>}
           </div>
         </div>
-      )}
+
+        {showSecret && (
+          <div className="modal secret-modal">
+            <div className="modal-card">
+              <h3>💌 Carta secreta</h3>
+              <div className="secret-text">
+                Nicole… hoy celebramos la vida de una mujer extraordinaria. Una
+                mujer que no solo ilumina su propio camino, sino también el de
+                quienes tenemos la fortuna de cruzarnos con ella.
+                <br />
+                <br />
+                Quiero que este cumpleaños sea un recordatorio de lo valiosa que
+                eres, de la fuerza tierna que llevas dentro y de la forma en la
+                que haces más bonito todo lo que tocas.
+                <br />
+                <br />
+                Gracias por dejarme estar cerca de tu mundo, de tus risas, de
+                tus silencios y de tus sueños.
+                <br />
+                <br />
+                Con todo mi cariño, <strong>Adrian Tobar</strong>
+              </div>
+              <div className="modal-actions">
+                <button
+                  onClick={() => setShowSecret(false)}
+                  className="btn-primary"
+                >
+                  Cerrar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
