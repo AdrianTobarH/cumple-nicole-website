@@ -2,215 +2,253 @@
 import React, { useState } from "react";
 import "./Games.css";
 
-const WIDTH = 6;
-const HEIGHT = 6;
-const CANDIES = ["🍓", "🍋", "🍇", "🍒", "🍬"];
-const TARGET_SCORE = 120;
+const ROWS = 6;
+const COLS = 6;
+const GOAL = 150;          // meta de puntos
+const MAX_MOVES = 18;      // movimientos disponibles
+const POINTS_PER_CANDY = 10;
 
-const randomCandy = () =>
-  Math.floor(Math.random() * CANDIES.length);
+const CANDIES = ["🍓", "🍋", "🍇", "🍒", "🍬"];
+
+const randomCandy = () => CANDIES[Math.floor(Math.random() * CANDIES.length)];
 
 const createBoard = () =>
-  Array.from({ length: WIDTH * HEIGHT }, () => randomCandy());
+  Array.from({ length: ROWS }, () =>
+    Array.from({ length: COLS }, () => randomCandy())
+  );
 
-const isAdjacent = (a, b) => {
-  const rowA = Math.floor(a / WIDTH);
-  const rowB = Math.floor(b / WIDTH);
-  const colA = a % WIDTH;
-  const colB = b % WIDTH;
+const areAdjacent = (a, b) =>
+  a &&
+  b &&
+  ((Math.abs(a.row - b.row) === 1 && a.col === b.col) ||
+    (Math.abs(a.col - b.col) === 1 && a.row === b.row));
 
-  if (a === b) return false;
-  if (rowA === rowB && Math.abs(colA - colB) === 1) return true;
-  if (colA === colB && Math.abs(rowA - rowB) === 1) return true;
-  return false;
-};
-
-const findMatches = (board) => {
+function findMatches(board) {
   const matches = new Set();
 
-  // Horizontales
-  for (let row = 0; row < HEIGHT; row++) {
-    let runStart = row * WIDTH;
-    for (let col = 1; col <= WIDTH; col++) {
-      const idx = row * WIDTH + col;
-      const prev = board[idx - 1];
-      const curr = board[idx];
+  // horizontales
+  for (let r = 0; r < ROWS; r++) {
+    let runStart = 0;
+    for (let c = 1; c <= COLS; c++) {
+      const current = board[r][c];
+      const prev = board[r][c - 1];
+      if (c < COLS && current === prev && current != null) continue;
 
-      if (col < WIDTH && curr === prev && curr !== null) continue;
-
-      const runLength = idx - runStart;
-      if (runLength >= 3 && prev !== null) {
-        for (let k = 0; k < runLength; k++) {
-          matches.add(runStart + k);
+      const runLength = c - runStart;
+      if (prev != null && runLength >= 3) {
+        for (let k = runStart; k < c; k++) {
+          matches.add(`${r}-${k}`);
         }
       }
-      runStart = idx;
+      runStart = c;
     }
   }
 
-  // Verticales
-  for (let col = 0; col < WIDTH; col++) {
-    let runStart = col;
-    for (let row = 1; row <= HEIGHT; row++) {
-      const idx = row * WIDTH + col;
-      const prev = board[idx - WIDTH];
-      const curr = board[idx];
+  // verticales
+  for (let c = 0; c < COLS; c++) {
+    let runStart = 0;
+    for (let r = 1; r <= ROWS; r++) {
+      const current = board[r]?.[c];
+      const prev = board[r - 1]?.[c];
+      if (r < ROWS && current === prev && current != null) continue;
 
-      if (row < HEIGHT && curr === prev && curr !== null) continue;
-
-      const runLength = (idx - runStart) / WIDTH;
-      if (runLength >= 3 && prev !== null) {
-        for (let k = 0; k < runLength; k++) {
-          matches.add(runStart + k * WIDTH);
+      const runLength = r - runStart;
+      if (prev != null && runLength >= 3) {
+        for (let k = runStart; k < r; k++) {
+          matches.add(`${k}-${c}`);
         }
       }
-      runStart = idx;
+      runStart = r;
     }
   }
 
   return matches;
-};
+}
 
-export default function CandyLove({ onBack, onCompleted }) {
-  const [board, setBoard] = useState(createBoard);
+function applyGravity(board, matches) {
+  const newBoard = board.map((row) => row.slice());
+
+  // borra las casillas que coinciden
+  matches.forEach((key) => {
+    const [r, c] = key.split("-").map(Number);
+    newBoard[r][c] = null;
+  });
+
+  // gravedad columna por columna
+  for (let c = 0; c < COLS; c++) {
+    const col = [];
+    for (let r = ROWS - 1; r >= 0; r--) {
+      if (newBoard[r][c] != null) col.push(newBoard[r][c]);
+    }
+    for (let r = ROWS - 1; r >= 0; r--) {
+      if (col.length > 0) {
+        newBoard[r][c] = col.shift();
+      } else {
+        newBoard[r][c] = randomCandy();
+      }
+    }
+  }
+
+  return newBoard;
+}
+
+export default function CandyLove({ onBack, onComplete }) {
+  const [board, setBoard] = useState(() => createBoard());
   const [selected, setSelected] = useState(null);
+  const [clearing, setClearing] = useState(new Set());
   const [score, setScore] = useState(0);
-  const [showRomantic, setShowRomantic] = useState(false);
-  const [reported, setReported] = useState(false);
+  const [movesLeft, setMovesLeft] = useState(MAX_MOVES);
+  const [processing, setProcessing] = useState(false);
+  const [showWin, setShowWin] = useState(false);
 
-  const applyGravityAndFill = (arr) => {
-    for (let col = 0; col < WIDTH; col++) {
-      const values = [];
-      for (let row = HEIGHT - 1; row >= 0; row--) {
-        const idx = row * WIDTH + col;
-        if (arr[idx] !== null) values.push(arr[idx]);
-      }
+  const reachedGoal = score >= GOAL;
 
-      for (let row = 0; row < HEIGHT; row++) {
-        const idx = row * WIDTH + col;
-        if (row < HEIGHT - values.length) {
-          arr[idx] = null;
-        } else {
-          arr[idx] = values[values.length - (HEIGHT - row)];
-        }
-      }
-
-      // Rellenar huecos
-      for (let row = 0; row < HEIGHT; row++) {
-        const idx = row * WIDTH + col;
-        if (arr[idx] === null) {
-          arr[idx] = randomCandy();
-        }
-      }
-    }
+  const resetGame = () => {
+    setBoard(createBoard());
+    setSelected(null);
+    setClearing(new Set());
+    setScore(0);
+    setMovesLeft(MAX_MOVES);
+    setProcessing(false);
+    setShowWin(false);
   };
 
-  const resolveMatches = (arr) => {
-    let totalCleared = 0;
-
-    while (true) {
-      const matches = findMatches(arr);
-      if (matches.size === 0) break;
-
-      totalCleared += matches.size;
-      matches.forEach((idx) => {
-        arr[idx] = null;
-      });
-
-      applyGravityAndFill(arr);
-    }
-
-    if (totalCleared > 0) {
-      setScore((prev) => {
-        const newScore = prev + totalCleared * 10;
-        if (newScore >= TARGET_SCORE && !showRomantic) {
-          setShowRomantic(true);
-          if (!reported && onCompleted) {
-            onCompleted();
-            setReported(true);
-          }
-        }
-        return newScore;
-      });
-    }
-
-    return totalCleared;
+  const performSwap = (a, b) => {
+    const newBoard = board.map((row) => row.slice());
+    const tmp = newBoard[a.row][a.col];
+    newBoard[a.row][a.col] = newBoard[b.row][b.col];
+    newBoard[b.row][b.col] = tmp;
+    return newBoard;
   };
 
-  const handleSelect = (idx) => {
-    if (selected === null) {
-      setSelected(idx);
+  const handleCellClick = (row, col) => {
+    if (processing || showWin) return;
+
+    const current = { row, col };
+
+    if (!selected) {
+      setSelected(current);
       return;
     }
 
-    if (selected === idx) {
+    if (selected.row === row && selected.col === col) {
       setSelected(null);
       return;
     }
 
-    if (!isAdjacent(selected, idx)) {
-      setSelected(idx);
+    if (!areAdjacent(selected, current)) {
+      // si no es adyacente, selecciona esta nueva
+      setSelected(current);
       return;
     }
 
-    const newBoard = [...board];
-    [newBoard[selected], newBoard[idx]] = [newBoard[idx], newBoard[selected]];
+    // intento de swap válido
+    const swapped = performSwap(selected, current);
+    const matches = findMatches(swapped);
 
-    const cloned = [...newBoard];
-    const cleared = resolveMatches(cloned);
-
-    if (cleared > 0) {
-      setBoard(cloned);
+    if (matches.size === 0) {
+      // sin match: no se acepta la jugada
+      setSelected(null);
+      return;
     }
 
+    setProcessing(true);
+    setBoard(swapped);
+    setMovesLeft((m) => Math.max(0, m - 1));
     setSelected(null);
-  };
 
-  const resetGame = () => {
-    setBoard(createBoard());
-    setScore(0);
-    setShowRomantic(false);
+    // animación de "pop" antes de borrar realmente
+    setClearing(matches);
+
+    setTimeout(() => {
+      const afterGravity = applyGravity(swapped, matches);
+      setBoard(afterGravity);
+      setClearing(new Set());
+
+      setScore((prev) => {
+        const pointsGained = matches.size * POINTS_PER_CANDY;
+        const nextScore = prev + pointsGained;
+
+        if (nextScore >= GOAL && !showWin) {
+          setShowWin(true);
+          if (onComplete) onComplete();
+        }
+
+        return nextScore;
+      });
+
+      setProcessing(false);
+    }, 260);
   };
 
   return (
-    <div className="game-screen">
+    <div className="game-screen candy-love-screen">
       <div className="game-topbar">
         <button className="back-btn" onClick={onBack}>
           ← Volver
         </button>
-        <div className="counter">Puntos: {score}</div>
-      </div>
-
-      <div className="candy-stage">
-        <p className="hint">
-          Intercambia caramelos adyacentes para hacer líneas de 3 o más 💝
-        </p>
-
-        <div className="candy-grid">
-          {board.map((value, idx) => (
-            <button
-              key={idx}
-              className={`candy-cell ${
-                selected === idx ? "selected" : ""
-              }`}
-              onClick={() => handleSelect(idx)}
-            >
-              {CANDIES[value]}
-            </button>
-          ))}
+        <div className="candy-stats">
+          <span>
+            Puntos: <strong>{score}</strong>
+          </span>
+          <span>
+            Meta: <strong>{GOAL}</strong>
+          </span>
+          <span>
+            Movimientos: <strong>{movesLeft}</strong>
+          </span>
         </div>
-
-        <p className="candy-score">
-          Consigue al menos {TARGET_SCORE} puntos para desbloquear la sorpresa
-          romántica ✨
-        </p>
-
-        <button className="btn-secondary" onClick={resetGame}>
-          Reiniciar partida
-        </button>
       </div>
 
-      {showRomantic && (
+      <div className="candy-love-wrap">
+        <div className={`candy-panel ${reachedGoal ? "goal-hit" : ""}`}>
+          <p className="candy-instr">
+            Intercambia caramelos <strong>adyacentes</strong> para hacer líneas
+            de 3 o más <span>🥰</span>
+          </p>
+
+          <div className="candy-grid">
+            {board.map((row, r) =>
+              row.map((candy, c) => {
+                const key = `${r}-${c}`;
+                const isSelected =
+                  selected && selected.row === r && selected.col === c;
+                const isPopping = clearing.has(key);
+
+                return (
+                  <button
+                    key={key}
+                    className={`candy-cell ${
+                      isSelected ? "selected" : ""
+                    } ${isPopping ? "pop" : ""}`}
+                    onClick={() => handleCellClick(r, c)}
+                    disabled={processing}
+                  >
+                    <span className="candy-emoji">{candy}</span>
+                  </button>
+                );
+              })
+            )}
+          </div>
+
+          <p className="candy-goal">
+            Consigue al menos{" "}
+            <strong>
+              {GOAL} puntos{" "}
+              {reachedGoal && <span className="goal-badge">¡Logrado! ✨</span>}
+            </strong>{" "}
+            para desbloquear la sorpresa romántica 💖
+          </p>
+
+          <div className="candy-actions">
+            <button className="btn-secondary" onClick={resetGame}>
+              Reiniciar partida
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {showWin && (
         <div className="modal secret-modal">
           <div className="modal-card">
             <h3>¡Nivel de dulzura máximo! 🍬💗</h3>
@@ -226,7 +264,10 @@ export default function CandyLove({ onBack, onCompleted }) {
               </strong>
             </p>
             <div className="modal-actions">
-              <button className="btn-primary" onClick={() => setShowRomantic(false)}>
+              <button
+                className="btn-primary"
+                onClick={() => setShowWin(false)}
+              >
                 Guardar recompensa 💌
               </button>
             </div>

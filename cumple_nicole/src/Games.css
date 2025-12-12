@@ -292,45 +292,180 @@
   justify-content: center;
 }
 
-/* Candy Love */
-.candy-stage {
-  text-align: center;
-  margin-top: 12px;
+/* ===================== */
+/* Candy Love – Match 3  */
+/* ===================== */
+
+.candy-love-screen {
+  position: relative;
 }
+
+.candy-love-wrap {
+  margin-top: 14px;
+  display: flex;
+  justify-content: center;
+  padding: 6px;
+}
+
+.candy-panel {
+  position: relative;
+  width: 100%;
+  max-width: 540px;
+  padding: 18px 20px 22px;
+  border-radius: 22px;
+  background: radial-gradient(circle at top, #ffe8fb 0%, #ffd6f2 40%, #ffeefb 100%);
+  box-shadow: 0 18px 45px rgba(255, 110, 180, 0.35);
+  text-align: center;
+  overflow: hidden;
+}
+
+/* brillo cuando se alcanza la meta */
+.candy-panel.goal-hit {
+  animation: candyGlow 1.4s ease-in-out infinite alternate;
+}
+
+@keyframes candyGlow {
+  from {
+    box-shadow: 0 18px 45px rgba(255, 110, 180, 0.35);
+    transform: translateY(0);
+  }
+  to {
+    box-shadow: 0 24px 60px rgba(255, 160, 220, 0.75);
+    transform: translateY(-2px);
+  }
+}
+
+.candy-instr {
+  margin: 0 0 10px;
+  font-size: 0.96rem;
+  color: #8a456a;
+}
+
+.candy-instr span {
+  font-size: 1.2rem;
+}
+
+/* marcador superior */
+.candy-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: flex-end;
+  font-size: 0.9rem;
+  color: #9a4c71;
+}
+
+.candy-stats span strong {
+  color: #ff3f9a;
+}
+
+/* tablero */
 .candy-grid {
-  width: 320px;
+  margin: 10px auto 14px;
+  width: min(360px, 86vw);
+  aspect-ratio: 1 / 1;
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  gap: 6px;
-  margin: 0 auto 10px;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(8px);
 }
+
 .candy-cell {
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
   border: none;
+  padding: 0;
+  border-radius: 14px;
   background: #ffffff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  font-size: 1.6rem;
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.15s, box-shadow 0.15s, border 0.15s;
-}
-.candy-cell.selected {
-  transform: translateY(-2px) scale(1.05);
-  border: 2px solid #ff7fb6;
-  box-shadow: 0 8px 18px rgba(255, 120, 170, 0.3);
-}
-.candy-score {
-  margin-top: 4px;
-  margin-bottom: 8px;
-  color: #6b3a55;
-  font-size: 0.95rem;
+  cursor: pointer;
+  box-shadow: 0 9px 18px rgba(255, 120, 190, 0.24);
+  transition: transform 0.16s ease, box-shadow 0.16s ease,
+    background 0.16s ease;
 }
 
-/* small utilities */
-.game-screen .back-btn {
-  font-size: 0.95rem;
+.candy-cell:disabled {
+  cursor: default;
+  opacity: 0.9;
+}
+
+.candy-cell:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 12px 24px rgba(255, 120, 190, 0.4);
+}
+
+.candy-cell.selected {
+  transform: translateY(-4px) scale(1.06);
+  box-shadow: 0 16px 28px rgba(255, 120, 190, 0.6);
+  outline: 2px solid #ff8ac6;
+}
+
+/* animación al desaparecer caramelos */
+.candy-cell.pop {
+  animation: candyPop 0.25s ease-out forwards;
+}
+
+@keyframes candyPop {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  40% {
+    transform: scale(1.12);
+  }
+  100% {
+    transform: scale(0.2);
+    opacity: 0;
+  }
+}
+
+.candy-emoji {
+  font-size: clamp(1.6rem, 4vw, 1.9rem);
+  pointer-events: none;
+}
+
+.candy-goal {
+  font-size: 0.9rem;
+  color: #8c4a69;
+  margin-bottom: 10px;
+}
+
+.candy-goal strong {
+  color: #ff2f94;
+}
+
+.goal-badge {
+  display: inline-block;
+  margin-left: 4px;
+  padding: 2px 6px;
+  font-size: 0.72rem;
+  border-radius: 999px;
+  background: #ffe1f3;
+  color: #ff3d9c;
+}
+
+.candy-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+/* responsive pequeño */
+@media (max-width: 480px) {
+  .candy-panel {
+    padding: 16px 14px 20px;
+  }
+
+  .candy-grid {
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .candy-cell {
+    border-radius: 12px;
+  }
 }
