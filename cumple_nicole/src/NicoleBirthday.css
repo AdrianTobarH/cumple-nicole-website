@@ -1,144 +1,261 @@
-/* ---- Layout premium alrededor de toda la app ---- */
-
-.app-premium-bg {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 18px 10px 26px;
-}
-
-.app-premium-frame {
-  width: min(1040px, 100%);
-  background: rgba(255, 255, 255, 0.82);
-  backdrop-filter: blur(18px);
-  border-radius: 24px;
-  box-shadow: 0 24px 80px rgba(255, 120, 175, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.7);
-  padding: 16px 16px 20px;
+/* Fondo general */
+body {
+  background: linear-gradient(180deg, #ffe0f4 0%, #ffd6ee 45%, #ffecf8 100%);
+  font-family: "Poppins", sans-serif;
+  overflow-x: hidden;
   position: relative;
+  cursor: url("https://cur.cursors-4u.net/nature/nat-8/nat772.cur"), auto;
 }
 
-.app-premium-header {
+/* Glitter rosa */
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAB4CAYAAABx6D7YAAAACXBIWXMAAC4jAAAuIwF4pT92AAAEs0lEQVR4nO3dy47kRhCF4UfgA3gAttrz7H5F6h3tFfRa3hUNBM8DT6vKrrfE0kP7FpC18JNAAAQIECBAgQIAAAQJMyzzl6N53cedc5zznnHNPPufc5zznnHNPPufc5zznnHNPPufc5zxn2tl2Frq9tHnr6ERJxtrHk+qeqPqu5lRt5z3R8T5j2s7Rb7+y3f+vzpU7X8qnpR0Z7Edbs6GOeVs7Gk7FjbvmiJ37/R4IkmrZtE0jZ7uG3e8H7Uv0zSNE27Nv8Sxv1hZ3pFva3pFl/lfHeHbZG2P0GnH4z2L9nYb3qFle7aJ7n4GZ9q7FuP4ufv0H8sG7aKvYzDf6Yz9sL173vT4I4xpYvF0k3XH6mZvWt9VX9c9jP2GkHxvKj6yYf7GZf7Td+5uJE1a9me7ON3MeTFd7Zsnyk3eiZ7z+WOq3lX7e2lr/8tOKv6xJtyuO9g8rnbK9TDXf3L42LfbNs7SkXz9h5p3zHGW99b24mk36n69KX7V+Q5/j3jG26u8kddk3Rd6+Rr7Y9nw5w1oyhH5m317b3s+2fu1mmH2G7mn/zjbVxzff2ludy3efWlxzm7aXntveb7xe//Sqn9i1zff8N1mt7vVUu9nX59xj2a/bR3lja/7b9wnOHr2mn3f+6mOWu237R72M97w7MPlZ33NWH3KzN+Vsc8/2tqS+SY7yST89yd0Vtudc55xzTz7n3Oc855xzTz7n3Oc855xzTz7n3Oc855xzTz7n3Ocy/Yf0GAziFN/Z+nXgAAAABJRU5ErkJggg==");
+  background-size: cover;
+  opacity: 0.55;
+  animation: glitterMove 18s linear infinite;
+  z-index: -1;
+}
+
+@keyframes glitterMove {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-240px);
+  }
+}
+
+/* Layout principal */
+.birthday-root {
+  min-height: 100vh;
+}
+
+.top-strip {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 16px 18px 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 4px;
 }
 
-.badge-premium,
-.badge-complete {
+.top-badge {
   font-size: 0.8rem;
-  padding: 6px 10px;
+  padding: 6px 12px;
   border-radius: 999px;
-  background: rgba(255, 230, 245, 0.9);
-  color: #b43c79;
+  background: rgba(255, 255, 255, 0.95);
+  color: #ff5fa2;
+  box-shadow: 0 8px 20px rgba(255, 120, 175, 0.3);
+}
+
+.music-toggle {
+  border-radius: 999px;
+  border: none;
+  padding: 6px 16px;
+  background: #ffffff;
+  color: #ff5fa2;
   font-weight: 600;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
 }
 
-.badge-complete {
-  background: linear-gradient(90deg, #ffb3d9, #ffe0f4);
+.birthday-container {
+  max-width: 980px;
+  margin: 0 auto 40px;
+  padding: 0 18px 32px;
+  position: relative;
+  background: linear-gradient(180deg, #ffeef8, #ffe9f5);
+  border-radius: 24px;
+  box-shadow: 0 16px 40px rgba(255, 120, 175, 0.25);
 }
 
-.app-premium-footer {
-  margin-top: 10px;
+/* Título con latido */
+.titulo-latido {
   text-align: center;
+  font-size: 2.6rem;
+  color: #ff5fa2;
+  margin-top: 18px;
+  font-weight: 700;
+  animation: pulse 2.4s infinite;
 }
 
-.footer-mini {
-  font-size: 0.85rem;
-  color: #7a4662;
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
 }
 
-/* Botón flotante de juegos */
-.floating-games-btn {
-  position: fixed;
-  right: 18px;
-  bottom: 18px;
-  z-index: 1500;
-  background: linear-gradient(90deg, #ff6fb7, #ff82c1);
+/* Carrusel Polaroid */
+.carousel-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.polaroid-frame {
+  background: white;
+  padding: 12px 12px 26px;
+  border-radius: 16px;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.22);
+}
+
+.carousel-img {
+  width: 280px;
+  height: 280px;
+  object-fit: cover;
+  border-radius: 10px;
+  display: block;
+  margin: 0 auto;
+}
+
+.polaroid-note {
+  text-align: center;
+  display: block;
+  margin-top: 8px;
+  font-size: 1rem;
+  font-family: "Pacifico", cursive;
+  color: #ff5fa2;
+}
+
+/* Carta */
+.carta-container {
+  width: 100%;
+  margin: 20px auto 10px;
+  background: white;
+  padding: 22px;
+  border-radius: 18px;
+  box-shadow: 0 8px 20px rgba(255, 120, 175, 0.25);
+}
+
+.carta-texto {
+  font-size: 1.05rem;
+  color: #444;
+  line-height: 1.7;
+  text-align: left;
+}
+
+/* Typewriter */
+.carta-texto.typewriter {
+  white-space: pre-line;
+}
+
+.type-cursor {
+  display: inline-block;
+  width: 2px;
+  background: #ff5fa2;
+  margin-left: 2px;
+  animation: blink 0.9s steps(2, start) infinite;
+}
+
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Paneles inferiores */
+.mini-panels {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 16px;
+  margin: 10px auto 0;
+}
+
+.mini-panel {
+  background: #ffeef8;
+  border-radius: 16px;
+  padding: 14px 16px;
+  box-shadow: 0 6px 16px rgba(255, 120, 175, 0.25);
+}
+
+.mini-panel h3 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  color: #ff5fa2;
+  font-size: 1rem;
+}
+
+.mini-panel ul {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 0.95rem;
+  color: #5b384b;
+}
+
+/* Botón sorpresa */
+.boton-sorpresa {
+  background: #ff7ec9;
   color: white;
   border: none;
-  padding: 12px 16px;
+  padding: 12px 18px;
   border-radius: 14px;
-  box-shadow: 0 10px 30px rgba(255, 80, 150, 0.18);
-  cursor: pointer;
-  font-weight: 600;
-}
-
-/* Overlay de juegos */
-.games-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 1400;
-  background: rgba(10, 0, 20, 0.32);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.games-overlay-inner {
-  max-width: 980px;
-  width: 94%;
-  padding: 12px;
-}
-
-/* Contenedor principal para poder posicionar cosas relativas */
-.birthday-container {
-  position: relative;
-}
-
-/* Botón música */
-.music-toggle {
-  position: absolute;
-  top: 12px;
-  right: 14px;
-  background: rgba(255, 255, 255, 0.82);
-  border-radius: 999px;
-  border: 1px solid rgba(255, 180, 215, 0.9);
-  padding: 6px 12px;
-  font-size: 0.85rem;
-  cursor: pointer;
-  color: #b43c79;
-  box-shadow: 0 4px 14px rgba(255, 120, 175, 0.24);
-}
-
-/* Tarjetitas románticas debajo de la carta */
-.premium-row-cards {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  justify-content: center;
-  margin: 6px auto 0;
-  width: 86%;
-}
-
-.mini-love-card {
-  flex: 1 1 220px;
-  background: linear-gradient(180deg, #fff7fb, #ffe5f3);
-  border-radius: 14px;
-  padding: 12px 14px;
-  box-shadow: 0 6px 18px rgba(255, 120, 175, 0.26);
-  font-size: 0.9rem;
-  color: #623248;
-}
-
-.mini-love-title {
-  font-weight: 700;
-  font-size: 0.95rem;
-  color: #ff5fa2;
+  font-size: 1.1rem;
   display: block;
-  margin-bottom: 4px;
+  margin: 22px auto 8px;
+  cursor: pointer;
+  box-shadow: 0 5px 15px rgba(255, 100, 170, 0.4);
+  transition: 0.3s;
+}
+.boton-sorpresa:hover {
+  transform: scale(1.06);
 }
 
-.mini-love-card ul {
-  padding-left: 18px;
-  margin: 0;
+/* Nota inferior */
+.bottom-note {
+  text-align: center;
+  font-size: 0.95rem;
+  color: #7b3a57;
+  margin-bottom: 10px;
 }
-.carta-hint {
-  font-size: 0.8rem;
-  color: #a05379;
-  margin-top: 8px;
-  text-align: right;
-  opacity: 0.8;
+
+/* Corazones */
+.heart {
+  position: absolute;
+  font-size: 2.2rem;
+  bottom: -40px;
+  transform: translateY(0) scale(0.9);
+  animation: heartFloat 4.5s linear forwards;
+  filter: drop-shadow(0 6px 8px rgba(255, 100, 170, 0.22));
+}
+
+@keyframes heartFloat {
+  0% {
+    transform: translateY(0) scale(0.9);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-420px) scale(1.3);
+    opacity: 0;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .birthday-container {
+    margin: 0 8px 28px;
+    padding: 0 12px 24px;
+  }
+
+  .titulo-latido {
+    font-size: 2.1rem;
+  }
+
+  .carousel-img {
+    width: 230px;
+    height: 230px;
+  }
 }

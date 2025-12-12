@@ -14,28 +14,30 @@ const shuffle = (arr) => {
   return a;
 };
 
-export default function Puzzle({ onBack, onComplete }) {
+export default function Puzzle({ onBack, onCompleted }) {
   const [tiles, setTiles] = useState(createOrdered());
   const [selected, setSelected] = useState(null);
   const [won, setWon] = useState(false);
-  const [reportedDone, setReportedDone] = useState(false);
+  const [reported, setReported] = useState(false);
 
   useEffect(() => {
     setTiles(shuffle(createOrdered()));
     setWon(false);
-    setReportedDone(false);
   }, []);
 
   const swap = (i, j) => {
     const t = tiles.slice();
     [t[i], t[j]] = [t[j], t[i]];
     setTiles(t);
+
     if (t.every((v, idx) => v === idx)) {
-      if (!reportedDone && onComplete) {
-        onComplete();
-        setReportedDone(true);
-      }
-      setTimeout(() => setWon(true), 250);
+      setTimeout(() => {
+        setWon(true);
+        if (!reported && onCompleted) {
+          onCompleted();
+          setReported(true);
+        }
+      }, 250);
     }
   };
 
@@ -55,7 +57,9 @@ export default function Puzzle({ onBack, onComplete }) {
   return (
     <div className="game-screen">
       <div className="game-topbar">
-        <button className="back-btn" onClick={onBack}>← Back</button>
+        <button className="back-btn" onClick={onBack}>
+          ← Volver
+        </button>
         <div className="counter">Puzzle 3×3</div>
       </div>
 
@@ -81,7 +85,8 @@ export default function Puzzle({ onBack, onComplete }) {
         </div>
 
         <p className="puzzle-instr">
-          Click en una pieza y luego en otra para intercambiar. Arma la imagen completa ✨
+          Click en una pieza y luego en otra para intercambiar. Arma la imagen
+          completa ✨
         </p>
       </div>
 
@@ -90,7 +95,8 @@ export default function Puzzle({ onBack, onComplete }) {
           <div className="modal-card">
             <h3>¡Lo lograste! 🎉</h3>
             <p className="secret-text">
-              Así como armaste esta imagen… quiero construir muchos momentos contigo.
+              Así como armaste esta imagen… quiero construir muchos momentos
+              contigo.
             </p>
             <div className="modal-actions">
               <button
@@ -98,12 +104,13 @@ export default function Puzzle({ onBack, onComplete }) {
                 onClick={() => {
                   setWon(false);
                   setTiles(shuffle(createOrdered()));
-                  setReportedDone(false);
                 }}
               >
                 Jugar de nuevo
               </button>
-              <button className="btn-secondary" onClick={onBack}>Volver</button>
+              <button className="btn-secondary" onClick={onBack}>
+                Volver
+              </button>
             </div>
           </div>
         </div>

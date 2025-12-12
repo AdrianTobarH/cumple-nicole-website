@@ -1,20 +1,16 @@
-// Nicole_Birthday_Page.jsx
-import React, { useState, useEffect } from "react";
+// NicoleBirthdayPage.jsx
+import React, { useEffect, useRef, useState } from "react";
 import Confetti from "react-confetti";
-
 import "./NicoleBirthday.css";
 
-// Carrusel de imágenes
 import foto1 from "./IMG-20220513-WA0052.jpg";
 import foto2 from "./IMG-20250706-WA0013.jpg";
 import foto3 from "./IMG-20250808-WA0036.jpg";
 import foto4 from "./IMG-20251009-WA0061.jpg";
 import foto5 from "./IMG-20251019-WA0024.jpg";
 
-// Audio
 import audioFile from "./mensaje-cumple-nicole.mp3";
 
-// Texto de la carta (para el efecto máquina de escribir)
 const LETTER_TEXT = `Nicole… hoy celebramos la vida de una mujer extraordinaria.
 Una mujer que ilumina su propio camino y también el de quienes tenemos la fortuna de encontrarnos con ella.
 Hoy el mundo se vuelve un poco más suave, un poco más hermoso, porque en un día como este llegaste tú.
@@ -42,49 +38,48 @@ Adrian Tobar`;
 function NicoleBirthdayPage() {
   const [showConfetti, setShowConfetti] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [typedText, setTypedText] = useState("");
+  const [finishedTyping, setFinishedTyping] = useState(false);
   const [showHearts, setShowHearts] = useState(false);
-  const [audio] = useState(() => new Audio(audioFile));
   const [isPlaying, setIsPlaying] = useState(false);
 
-  // máquina de escribir
-  const [typedText, setTypedText] = useState("");
-  const [isTypingDone, setIsTypingDone] = useState(false);
-
   const images = [foto1, foto2, foto3, foto4, foto5];
+  const audioRef = useRef(null);
 
-  // Música automática con permiso del usuario
+  // Configurar audio
   useEffect(() => {
-    audio.volume = 0.5;
-    audio.playbackRate = 1.0;
+    const audio = new Audio(audioFile);
     audio.loop = true;
-
-    const playAudioOnFirstClick = () => {
-      audio
-        .play()
-        .then(() => setIsPlaying(true))
-        .catch(() => {});
-      document.removeEventListener("click", playAudioOnFirstClick);
-    };
-
-    document.addEventListener("click", playAudioOnFirstClick);
+    audio.volume = 0.5;
+    audioRef.current = audio;
 
     return () => {
       audio.pause();
-      document.removeEventListener("click", playAudioOnFirstClick);
     };
-  }, [audio]);
+  }, []);
 
-  const toggleMusic = () => {
+  const toggleMusic = async () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
     if (isPlaying) {
       audio.pause();
       setIsPlaying(false);
     } else {
-      audio
-        .play()
-        .then(() => setIsPlaying(true))
-        .catch(() => {});
+      try {
+        await audio.play();
+        setIsPlaying(true);
+      } catch {
+        // ignorar error de autoplay
+      }
     }
   };
+
+  // Confetti unos segundos
+  useEffect(() => {
+    const t = setTimeout(() => setShowConfetti(false), 7000);
+    return () => clearTimeout(t);
+  }, []);
 
   // Carrusel automático
   useEffect(() => {
@@ -94,125 +89,106 @@ function NicoleBirthdayPage() {
     return () => clearInterval(interval);
   }, [images.length]);
 
-  // Confetti se apaga solo
+  // Máquina de escribir
   useEffect(() => {
-    const t = setTimeout(() => setShowConfetti(false), 9000);
-    return () => clearTimeout(t);
+    let index = 0;
+    const interval = setInterval(() => {
+      index += 1;
+      setTypedText(LETTER_TEXT.slice(0, index));
+      if (index >= LETTER_TEXT.length) {
+        clearInterval(interval);
+        setFinishedTyping(true);
+      }
+    }, 28);
+
+    return () => clearInterval(interval);
   }, []);
 
   // Corazones sorpresa
   const triggerHearts = () => {
     setShowHearts(true);
-    setTimeout(() => setShowHearts(false), 5500);
-  };
-
-  // Efecto máquina de escribir para la carta
-  useEffect(() => {
-    let i = 0;
-    const speed = 25; // ms por carácter
-
-    const typeInterval = setInterval(() => {
-      i += 1;
-      setTypedText(LETTER_TEXT.slice(0, i));
-
-      if (i >= LETTER_TEXT.length) {
-        clearInterval(typeInterval);
-        setIsTypingDone(true);
-      }
-    }, speed);
-
-    return () => clearInterval(typeInterval);
-  }, []);
-
-  // Permitir que ella salte la animación con un click
-  const skipTyping = () => {
-    if (!isTypingDone) {
-      setTypedText(LETTER_TEXT);
-      setIsTypingDone(true);
-    }
+    setTimeout(() => setShowHearts(false), 5000);
   };
 
   return (
-    <div className="birthday-container">
-      {/* Botón música */}
-      <button className="music-toggle" onClick={toggleMusic}>
-        {isPlaying ? "🔊 Música" : "🔈 Música"}
-      </button>
+    <div className="birthday-root">
+      {showConfetti && <Confetti recycle={false} />}
 
-      {showConfetti && <Confetti />}
+      <header className="top-strip">
+        <div className="top-badge">Edición Premium · Para Nicole</div>
+        <button className="music-toggle" onClick={toggleMusic}>
+          {isPlaying ? "⏸ Música" : "▶ Música"}
+        </button>
+      </header>
 
-      {/* Título */}
-      <h1 className="titulo-latido">💗 Feliz Cumpleaños, Nicole 💗</h1>
+      <main className="birthday-container">
+        <h1 className="titulo-latido">💗 Feliz Cumpleaños, Nicole 💗</h1>
 
-      {/* Carrusel Polaroid */}
-      <div className="carousel-container">
-        <div className="polaroid-frame">
-          <img
-            src={images[currentIndex]}
-            alt="Foto"
-            className="carousel-img"
-          />
-          <span className="polaroid-note">Nicole ✧</span>
+        {/* Carrusel Polaroid */}
+        <div className="carousel-container">
+          <div className="polaroid-frame">
+            <img
+              src={images[currentIndex]}
+              alt="Nicole y Adrian"
+              className="carousel-img"
+            />
+            <span className="polaroid-note">Nicole ✧</span>
+          </div>
         </div>
-      </div>
 
-      {/* Carta con efecto máquina de escribir */}
-      <div className="carta-container" onClick={skipTyping}>
-        <p className="carta-texto">
-          {typedText.split("\n").map((line, idx) => (
-            <React.Fragment key={idx}>
-              {line}
-              <br />
-            </React.Fragment>
-          ))}
+        {/* Carta con typewriter */}
+        <section className="carta-container">
+          <div className="carta-texto typewriter">
+            <span>{typedText}</span>
+            {!finishedTyping && <span className="type-cursor">|</span>}
+          </div>
+        </section>
+
+        {/* Paneles de lista */}
+        <section className="mini-panels">
+          <div className="mini-panel">
+            <h3>3 cosas que amo de ti</h3>
+            <ul>
+              <li>Cómo miras el mundo con sensibilidad.</li>
+              <li>Tu forma de cuidar a las personas que quieres.</li>
+              <li>La paz que siento cuando estoy contigo.</li>
+            </ul>
+          </div>
+
+          <div className="mini-panel">
+            <h3>Deseos para este año ✨</h3>
+            <ul>
+              <li>Que te sientas más segura de ti que nunca.</li>
+              <li>Que tengas tiempo para todo lo que te hace bien.</li>
+              <li>Que nunca te falten abrazos sinceros.</li>
+            </ul>
+          </div>
+        </section>
+
+        {/* Botón sorpresa */}
+        <button className="boton-sorpresa" onClick={triggerHearts}>
+          ✨ Toque sorpresa ✨
+        </button>
+
+        <p className="bottom-note">
+          Juega los mini-juegos para desbloquear todas las sorpresas 💖
         </p>
-        {!isTypingDone && (
-          <p className="carta-hint">
-            (Toca la carta si quieres que aparezca completa más rápido ✨)
-          </p>
-        )}
-      </div>
 
-      {/* Tarjetitas románticas extra */}
-      <div className="premium-row-cards">
-        <div className="mini-love-card">
-          <span className="mini-love-title">3 cosas que amo de ti</span>
-          <ul>
-            <li>Cómo miras el mundo con sensibilidad.</li>
-            <li>Tu forma de cuidar a las personas que quieres.</li>
-            <li>La paz que siento cuando estoy contigo.</li>
-          </ul>
-        </div>
-
-        <div className="mini-love-card">
-          <span className="mini-love-title">Deseos para este año</span>
-          <ul>
-            <li>Que te sientas más segura de ti que nunca.</li>
-            <li>Que tengas tiempo para todo lo que te hace bien.</li>
-            <li>Que nunca te falten abrazos sinceros.</li>
-          </ul>
-        </div>
-      </div>
-
-      {/* Botón sorpresa */}
-      <button className="boton-sorpresa" onClick={triggerHearts}>
-        ✨ Toque sorpresa ✨
-      </button>
-
-      {/* Corazones flotando */}
-      {showHearts &&
-        [...Array(18)].map((_, i) => (
-          <span
-            key={i}
-            className="heart"
-            style={{
-              left: Math.random() * 90 + "%", // posición horizontal aleatoria
-              animationDuration: 3.5 + Math.random() * 3 + "s",
-            }}
-          >
-            💖
-          </span>
-        ))}
+        {/* Corazones flotando */}
+        {showHearts &&
+          [...Array(18)].map((_, i) => (
+            <span
+              key={i}
+              className="heart"
+              style={{
+                left: Math.random() * 90 + "%",
+                animationDuration: 3.5 + Math.random() * 3 + "s",
+              }}
+            >
+              💖
+            </span>
+          ))}
+      </main>
     </div>
   );
 }

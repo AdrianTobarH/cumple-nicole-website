@@ -1,94 +1,83 @@
 // App.jsx
 import React, { useState } from "react";
-import NicoleBirthdayPage from "./NicoleBirthdayPage"; // o tu nombre actual
+import NicoleBirthdayPage from "./NicoleBirthdayPage";
 import GamesMenu from "./GamesMenu";
-import "./NicoleBirthday.css";
 
 export default function App() {
   const [showGames, setShowGames] = useState(false);
 
-  const [completed, setCompleted] = useState({
-    hearts: false,
-    puzzle: false,
-    ruleta: false,
-  });
-
-  const [showFinalModal, setShowFinalModal] = useState(false);
-
-  const handleCompleteGame = (key) => {
-    setCompleted((prev) => {
-      if (prev[key]) return prev; // ya se marcó
-      const updated = { ...prev, [key]: true };
-      const allDone = updated.hearts && updated.puzzle && updated.ruleta;
-      if (allDone) {
-        setShowFinalModal(true);
-      }
-      return updated;
-    });
-  };
-
-  const allDone = completed.hearts && completed.puzzle && completed.ruleta;
-
   return (
-    <div className="app-premium-bg">
-      <div className="app-premium-frame">
-        <div className="app-premium-header">
-          <span className="badge-premium">Edición Premium · Para Nicole</span>
-          {allDone && <span className="badge-complete">🎁 Juegos completados</span>}
-        </div>
-
-        <NicoleBirthdayPage />
-
-        <div className="app-premium-footer">
-          <p className="footer-mini">
-            Juega los mini-juegos para desbloquear todas las sorpresas 💖
-          </p>
-        </div>
-      </div>
-
-      {/* Botón flotante para abrir el menú de juegos */}
+    <div style={{ position: "relative" }}>
+      {/* Botón flotante para abrir juegos */}
       <button
-        onClick={() => setShowGames((s) => !s)}
-        className="floating-games-btn"
+        onClick={() => setShowGames(true)}
+        style={{
+          position: "fixed",
+          right: 18,
+          bottom: 18,
+          zIndex: 1500,
+          background: "linear-gradient(90deg,#ff6fb7,#ff82c1)",
+          color: "white",
+          border: "none",
+          padding: "12px 16px",
+          borderRadius: 14,
+          boxShadow: "0 10px 30px rgba(255,80,150,0.18)",
+          cursor: "pointer",
+          fontWeight: 600,
+        }}
       >
         🎮 Juegos
       </button>
 
-      {showGames && (
-        <div className="games-overlay">
-          <div className="games-overlay-inner">
-            <GamesMenu
-              completed={completed}
-              onCompleteGame={handleCompleteGame}
-            />
-          </div>
-        </div>
-      )}
+      <NicoleBirthdayPage />
 
-      {showFinalModal && (
-        <div className="modal secret-modal">
-          <div className="modal-card">
-            <h3>🎁 Sorpresa final</h3>
-            <p className="secret-text">
-              Completaste todos los juegos, encontraste todas las pistas…  
-              y solo puedo decirte algo: te mereces todo lo bonito del mundo.
-              <br />
-              <br />
-              Prometo seguir inventando formas creativas de hacerte sentir querida,
-              escuchada y acompañada. Este regalo solo es el comienzo de muchas
-              celebraciones juntos.
-              <br />
-              <br />
-              Con todo mi cariño, <strong>Adrian</strong>.
-            </p>
-            <div className="modal-actions">
-              <button
-                className="btn-primary"
-                onClick={() => setShowFinalModal(false)}
-              >
-                Cerrar
-              </button>
-            </div>
+      {/* Overlay de juegos */}
+      {showGames && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 1400,
+            background: "rgba(0,0,0,0.35)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "18px",
+          }}
+        >
+          <div
+            style={{
+              position: "relative",
+              width: "100%",
+              maxWidth: 980,
+            }}
+          >
+            {/* Botón X para cerrar */}
+            <button
+              onClick={() => setShowGames(false)}
+              aria-label="Cerrar juegos"
+              style={{
+                position: "absolute",
+                top: -14,
+                right: -14,
+                width: 32,
+                height: 32,
+                borderRadius: "999px",
+                border: "none",
+                background: "#ffffff",
+                boxShadow: "0 10px 25px rgba(0,0,0,0.25)",
+                cursor: "pointer",
+                fontSize: 18,
+                color: "#ff5fa2",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              ✕
+            </button>
+
+            <GamesMenu />
           </div>
         </div>
       )}
